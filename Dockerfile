@@ -57,12 +57,13 @@ RUN rice embed-go && \
     CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -a -o wg-ui .
 
 # Release stage
-FROM alpine:3.16
+FROM linuxserver/wireguard:latest
 
-RUN addgroup -S wgui && \
-    adduser -S -D -G wgui wgui
+RUN addgroup --system wgui && \
+    adduser --system --no-create-home --disabled-password --disabled-login --ingroup wgui wgui
 
-RUN apk --no-cache add ca-certificates wireguard-tools jq
+RUN apt udpate && \
+    apt install -y ca-certificates wireguard-tools jq
 
 WORKDIR /app
 
@@ -74,5 +75,5 @@ RUN chmod +x wg-ui
 COPY init.sh .
 
 EXPOSE 5000/tcp
-HEALTHCHECK CMD ["wget","--output-document=-","--quiet","--tries=1","http://127.0.0.1:5000/_health"]
+
 ENTRYPOINT ["./init.sh"]

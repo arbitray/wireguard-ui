@@ -20,4 +20,5 @@ esac
 
 
 ./wg-ui &
-wait $!
+
+/init
